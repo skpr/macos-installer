@@ -1,0 +1,42 @@
+name: ☁️ Create DMG
+
+on:
+  push
+
+jobs:
+  create-dmg:
+    runs-on: macos-latest
+    steps:
+      - name: Check out repository code
+        uses: actions/checkout@v4
+
+      - name: Install create-dmg
+        run: |
+          brew update
+          brew install create-dmg wget
+
+      - name: Download binary
+        run: |
+          wget https://github.com/skpr/cli/releases/download/v0.26.3/skpr_0.26.3_macOS_arm64.tar.gz
+          tar -zxf skpr_0.26.3_macOS_arm64.tar.gz
+          mv skpr_0.26.3_macOS_arm64/skpr Skpr.app/Contents/MacOS/
+          mv skpr_0.26.3_macOS_arm64/skpr-beta Skpr.app/Contents/MacOS/
+          mv skpr_0.26.3_macOS_arm64/skpr-rsh Skpr.app/Contents/MacOS/
+
+      - name: Build
+        run: |
+          create-dmg --volname "Skpr Installer" \
+                     --background "background.png" \
+                     --window-pos 200 120 \
+                     --window-size 800 400 \
+                     --icon-size 100 \
+                     --icon "Skpr.app" 200 190 \
+                     --hide-extension "Skpr.app" \
+                     --app-drop-link 600 185 \
+                     "Skpr-Installer.dmg" \
+                     "./"
+
+      - uses: actions/upload-artifact@v4
+        with:
+          name: dmg-installer
+          path: Skpr-Installer.dmg
