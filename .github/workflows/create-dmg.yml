@@ -13,7 +13,7 @@ jobs:
       - name: Install create-dmg
         run: |
           brew update
-          brew install create-dmg wget
+          brew install create-dmg
 
       - name: Download binary
         run: |
